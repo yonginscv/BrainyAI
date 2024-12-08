@@ -84,13 +84,6 @@ At BrainyAI, we prioritize user privacy and take every measure to safeguard your
 
 All chat history, settings, and login data are securely stored locally on your device. We never collect or access this information from our servers.
 
-To enhance your BrainyAI experience, we gather anonymous usage data using GA4 that helps us understand user preferences and optimize our product. This data includes:
-
-- Frequency and duration of AI bot prompts (without capturing prompt content)
-- Response length and usage patterns (without capturing response content)
-
-This anonymous usage data is essential for continuous improvement and does not reveal any personally identifiable information.
-
 <br>
 <br>
 
@@ -139,14 +132,6 @@ Run the following:
 ```bash
 pnpm build:staing
 ```
-
-### To enable GA4 Measurement protocol
-
-```bash
-mv .env.example .env
-```
-
-and then add your GA4 Measurement ID and API Secret in the .env file
 
 
 

@@ -7,7 +7,6 @@ import styleText from 'data-text:~style/panel-main.module.scss';
 import * as style from "~style/panel-main.module.scss";
 import '~base.scss';
 import CommonShortcutProvider from "~provider/CommonShortcutProvider";
-import GoogleAnalyticsProvider from "~provider/GoogleAnalyticsProvider";
 
 export const getStyle: PlasmoGetStyle = () => {
     const style = document.createElement("style");
@@ -73,7 +72,7 @@ function TopWrapper({children}: { children: React.ReactNode }) {
 }
 
 export default function Main() {
-    return <GoogleAnalyticsProvider>
+    return (
         <CommonShortcutProvider>
             <SidePanelProvider>
                 <TopWrapper>
@@ -81,5 +80,5 @@ export default function Main() {
                 </TopWrapper>
             </SidePanelProvider>
         </CommonShortcutProvider>
-    </GoogleAnalyticsProvider>;
+    );
 }

@@ -7,7 +7,6 @@ import {SidePanelContext} from "~provider/sidepanel/SidePanelProvider";
 import {OpenPanelType} from "~libs/open-ai/open-panel";
 import Header from "~component/sidepanel/Header";
 import SearchHome from "~sidepanel/pages/search-home";
-import {GoogleAnalyticsContext} from "~provider/GoogleAnalyticsProvider";
 
 const DetermineRedirect = () => {
     const {panelOpenType} = useContext(SidePanelContext);
@@ -32,13 +31,8 @@ const DetermineRedirect = () => {
 
 const Container = function () {
     const {setNavigation} = useContext(SidePanelContext);
-    const {analytics} = useContext(GoogleAnalyticsContext);
     const navigate = useNavigate();
     const location = useLocation();
-
-    useEffect(() => {
-        void analytics.current.firePageViewEvent("", location.pathname);
-    }, [location]);
 
     useEffect(() => {
         setNavigation(() => {
