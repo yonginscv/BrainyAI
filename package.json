@@ -1,7 +1,7 @@
 {
-  "name": "brainy_ai",
-  "displayName": "BrainyAI",
-  "version": "0.0.7",
+  "name": "madang_ai",
+  "displayName": "Madang AI",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
     "dev": "set NODE_OPTIONS=--no-deprecation && plasmo dev",
@@ -79,7 +79,7 @@
       "wss://*/*"
     ],
     "action": {
-      "default_title": "BrainyAI"
+      "default_title": "MadangAI"
     },
     "permissions": [
       "declarativeNetRequest",

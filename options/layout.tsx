@@ -28,7 +28,7 @@ export default function Layout() {
         <div className={'w-[319px] bg-white cursor-pointer flex-shrink-0 flex-grow-0'}>
             <div className={'w-full flex flex-row mt-[64px] ml-[24px]'}>
                 <img src={Icon} className={'w-[32px] h-[32px]'}/>
-                <div style={{fontWeight: 500}} className={'text-[20px] text-[#0A4DFE] ml-[10px]'}>BrainyAI
+                <div style={{fontWeight: 500}} className={'text-[20px] text-[#0A4DFE] ml-[10px]'}>Madang AI
                 </div>
             </div>
             <div className={'flex flex-col mt-[86px] ml-[24px]'}>
@@ -43,6 +43,10 @@ export default function Layout() {
                     imageSrc={IconShortcut} imageSrcSelected={IconShortcutSelected}
                     text={'Shortcut Menu'} className={''}
                     isSelected={true}/>
+                <ImageTextComponent onClick={() => handleClick({id: 'APIKEY', path: ""})}
+                                    imageSrc={IconShortcut} imageSrcSelected={IconShortcutSelected}
+                                    text={'Contact Us'} className={'mt-[24px]'}
+                                    isSelected={false}/>
             </div>
         </div>
         <div className={"flex-1"}>

@@ -1,5 +1,4 @@
 import React, {Fragment, memo, useContext, useEffect, useRef, useState} from "react";
-import {SidePanelContext} from "~provider/sidepanel/SidePanelProvider";
 import styleText, * as style from "~style/panel-main.module.scss";
 import {Input, List, message, Modal, Popover, Tooltip, type UploadProps} from "antd";
 import {CaretDownOutlined, LoadingOutlined, UploadOutlined} from "@ant-design/icons";
@@ -384,7 +383,6 @@ const AITextContent = ({bot, message, pref, i}: {
     const {conversationId, messages} = useContext(ConversationContext);
     const [currentBotResponseMessage, setCurrentBotResponseMessage] = useState<ConversationResponse[]>([{message_type: ResponseMessageType.GENERATING}]);
     const [activePage, setActivePage] = useState(1);
-    const {messageApi} = useContext(SidePanelContext);
 
     useEffect(() => {
         void start();
@@ -442,12 +440,6 @@ const AITextContent = ({bot, message, pref, i}: {
         start();
     };
 
-    const copyClick = async () => {
-        navigator.clipboard.writeText(currentBotResponseMessage[activePage - 1].message_text ?? '').then(() => {
-            void messageApi.info('Copied successfully');
-        });
-    };
-
     const quotaClick = () => {
         eventBus.emit('quota-click', {
             title: QuotingType.QUOTE,
@@ -477,11 +469,6 @@ const AITextContent = ({bot, message, pref, i}: {
                                 alt=""/>
                         </CTooltip>
                     }
-                    <CTooltip title={"Copy"}>
-                        <img src={CopyIcon} className="w-[16px] h-[16px] mr-[8px] cursor-pointer"
-                            onClick={copyClick}
-                            alt=""/>
-                    </CTooltip>
                     <CTooltip title={"Quote"}>
                         <img src={QuotaIcon} className="w-[16px] h-[16px] cursor-pointer" onClick={quotaClick}
                             alt=""/>
@@ -704,7 +691,6 @@ export const AIMessage = memo(({message, i}: {
 export const UserMessage = ({message}: { message: ConversationMessage }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const ItemIcon = getIconSrc(message.data.promptImageUri ? message.data.promptImageUri : undefined);
-    const {messageApi} = useContext(SidePanelContext);
 
     Logger.log('user_message:', message);
 
@@ -716,11 +702,6 @@ export const UserMessage = ({message}: { message: ConversationMessage }) => {
         }, 20);
     }, [containerRef]);
 
-    const copyClick = async () => {
-        navigator.clipboard.writeText(message?.data?.text ?? "").then(() => {
-            void messageApi.info('Copied successfully');
-        });
-    };
 
     const quotaClick = () => {
         eventBus.emit('quota-click', {title: QuotingType.QUOTE, content: message.data.text});
@@ -740,7 +721,6 @@ export const UserMessage = ({message}: { message: ConversationMessage }) => {
             document.body.appendChild(link);
             link.click();
             link.parentNode?.removeChild(link);
-            void messageApi.success('Downloaded successfully');
         }
     };
 
@@ -844,11 +824,6 @@ export const UserMessage = ({message}: { message: ConversationMessage }) => {
                 </div>
 
                 {!message.data.isHaveUploadFile && <div className="group-hover:visible pr-[16px] flex items-center justify-end mt-2 invisible">
-                    <CTooltip title={"Copy"}>
-                        <img src={CopyIcon} className="w-[16px] h-[16px] mr-[8px] cursor-pointer"
-                            onClick={copyClick}
-                            alt=""/>
-                    </CTooltip>
                     <CTooltip title={"Quote"}>
                         <img src={QuotaIcon} className="w-[16px] h-[16px] cursor-pointer" onClick={quotaClick}
                             alt=""/>
@@ -1576,7 +1551,7 @@ function ConversationContent() {
 }
 
 export default function Conversation() {
-    const {windowHeight} = useContext(SidePanelContext);
+    const {windowHeight} = useContext(ConversationContext);
 
     return <ModelManagementProvider>
         <ConversationProvider>

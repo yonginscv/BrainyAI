@@ -2,7 +2,7 @@ import {RouterProvider} from "react-router-dom";
 import {router} from "~sidepanel/router";
 import React, {useContext} from "react";
 import type {PlasmoGetStyle} from "plasmo";
-import SidePanelProvider, {SidePanelContext} from "~provider/sidepanel/SidePanelProvider";
+import {ConversationProvider, ConversationContext} from "~provider/sidepanel/ConversationProvider";
 import styleText from 'data-text:~style/panel-main.module.scss';
 import * as style from "~style/panel-main.module.scss";
 import '~base.scss';
@@ -15,7 +15,7 @@ export const getStyle: PlasmoGetStyle = () => {
 };
 
 function TopWrapper({children}: { children: React.ReactNode }) {
-    const {windowHeight, setWindowHeight, expandMenu} = useContext(SidePanelContext);
+    const {windowHeight, setWindowHeight, expandMenu} = useContext(ConversationContext);
 
     const afterContainerRendered = (ref: HTMLParagraphElement) => {
         if (ref) {
@@ -74,11 +74,11 @@ function TopWrapper({children}: { children: React.ReactNode }) {
 export default function Main() {
     return (
         <CommonShortcutProvider>
-            <SidePanelProvider>
+            <ConversationProvider>
                 <TopWrapper>
                     <RouterProvider router={router}/>
                 </TopWrapper>
-            </SidePanelProvider>
+            </ConversationProvider>
         </CommonShortcutProvider>
     );
 }

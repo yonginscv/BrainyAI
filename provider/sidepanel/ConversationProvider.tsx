@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from "react";
-import {SidePanelContext} from "~provider/sidepanel/SidePanelProvider";
 import type {IAskAi} from "~libs/open-ai/open-panel";
 import {ModelManagementContext, type Ms} from "~provider/ModelManagementProvider";
 import {createUuid} from "~utils";
@@ -15,6 +14,10 @@ interface IConversationContext {
     conversationTitle: string;
     setConversationTitle: React.Dispatch<React.SetStateAction<string>>;
     resetConversation: () => void;
+    windowHeight: number;
+    setWindowHeight: React.Dispatch<React.SetStateAction<number>>;
+    expandMenu: boolean,
+    setExpandMenu: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 export class ConversationMessage {
@@ -37,11 +40,12 @@ export class ConversationMessage {
 export const ConversationContext = React.createContext<IConversationContext>({} as IConversationContext);
 
 export const ConversationProvider = ({children}: { children: React.ReactNode }) => {
-    const {askAiData} = useContext(SidePanelContext);
     const [messages, setMessages] = useState<IConversationContext['messages']>([]);
     const [globalConversationId, setGlobalConversationId] = useState<IConversationContext['conversationId']>(createUuid());
     const [isGeneratingMessage, setIsGeneratingMessage] = useState<IConversationContext['isGeneratingMessage']>(false);
     const [conversationTitle, setConversationTitle] = useState<string>('');
+    const [windowHeight, setWindowHeight] = useState<number>(0);
+    const [expandMenu, setExpandMenu] = useState<boolean>(false);
     const {currentBots} = useContext(ModelManagementContext);
 
     const resetConversation = () => {
@@ -50,14 +54,6 @@ export const ConversationProvider = ({children}: { children: React.ReactNode }) 
         setMessages([]);
     };
 
-    useEffect( () => {
-        if (askAiData) {
-            const userMessage = new ConversationMessage('user', askAiData);
-            const botMessage = new ConversationMessage('bot', askAiData, currentBots);
-
-            setMessages(preState => [...preState, userMessage, botMessage]);
-        }
-    }, [askAiData]);
 
     useEffect(() => {
         eventBus.on('newChat', resetConversation);
@@ -76,7 +72,11 @@ export const ConversationProvider = ({children}: { children: React.ReactNode }) 
         setIsGeneratingMessage,
         conversationTitle,
         setConversationTitle,
-        resetConversation
+        resetConversation,
+        windowHeight,
+        setWindowHeight,
+        expandMenu,
+        setExpandMenu
     }}>
         {children}
     </ConversationContext.Provider>;
