@@ -374,22 +374,19 @@ const getPrompt = function (message: ConversationMessage): string {
     return message.data.prompt.replaceAll(PROMPT_PLACEHOLDER_TEXT, `"${message.data.promptText}"`).replaceAll(PROMPT_PLACEHOLDER_LANG, `"${message.data.lang}"`);
 };
 
-const AITextContent = ({bot, message, pref, i}: {
-    bot: M,
-    message: ConversationMessage,
-    pref: React.RefObject<HTMLDivElement>,
-    i: number
-}) => {
+const AITextContent = ({bot, message, pref, i}) => {
     const {conversationId, messages} = useContext(ConversationContext);
     const [currentBotResponseMessage, setCurrentBotResponseMessage] = useState<ConversationResponse[]>([{message_type: ResponseMessageType.GENERATING}]);
     const [activePage, setActivePage] = useState(1);
 
     useEffect(() => {
+        Logger.log('Starting chat with bot:', bot.botName);
         void start();
     }, []);
 
     const start = () => {
         if (message.data.prompt) {
+            Logger.log('Prompt data:', message.data);
             const prompt = getPrompt(message);
             const rid = createUuid();
             const fileRefToken = UploadUtils.getFileRefToken(message,bot.botName);
@@ -1028,14 +1025,8 @@ function ConversationContent() {
 
     const handleMouseDown = (e: MouseEvent) => {
         Logger.log(`mousedown handleMouseDown===============${popIsShow}`);
-        if (popIsShow) {
-            const popComponent = promptPop.current;
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            if (popComponent && !popComponent.contains(e.target)) {
-                Logger.log(`mousedown closePromptPopup=============${popIsShow}`);
-                setIsPromptPopShow(false);
-            }
+        if (popIsShow && promptPop.current) {
+            setIsPromptPopShow(false);
         }
     };
 

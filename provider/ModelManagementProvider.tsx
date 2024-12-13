@@ -38,7 +38,7 @@ export const ModelManagementContext = createContext({} as IModelManagementProvid
 export default function ModelManagementProvider({children}) {
     const defaultModels: Ms = [ChatGPT35Turbo];
     const [currentBots, setCurrentBots] = useState<IModelManagementProvider['currentBots']>(defaultModels);
-    const allModels = useRef<Ms>([ChatGPT35Turbo, ChatGPT4O, ChatGPT4Turbo, CopilotBot]);
+    const allModels = useRef<Ms>([ChatGPT35Turbo, ChatGPT4O, ChatGPT4Turbo, CopilotBot, ChatGPT4oMiniAPI]);
     const storage = new Storage();
     const [isLoaded, setIsLoaded] = useState(false);
     const categoryModels = useRef<CMs>([
@@ -55,29 +55,31 @@ export default function ModelManagementProvider({children}) {
     const handleModelStorge = async () => {
         try {
             const value = await storage.get<string[]>("currentModelsKey");
-
+            Logger.log('local currentModels:', value);
+            
             const arr: Ms = [];
-
             if (value && value.length) {
-                Logger.log('local currentModels:',value);
                 value.forEach((ele) => {
+                    Logger.log('checking model:', ele);
                     allModels.current.forEach((item) => {
+                        Logger.log('comparing with:', item.botName);
                         if (item.botName === ele) {
                             arr.push(item);
+                            Logger.log('model matched:', item.botName);
                         }
                     });
                 });
-
+                
+                Logger.log('final models array:', arr);
                 if (arr.length) {
                     setCurrentBots(arr);
-                }else {
+                } else {
                     setCurrentBots(defaultModels);
                 }
             }
-        }catch (e) {
-            // ignore
-        }
-        finally {
+        } catch (e) {
+            Logger.error('Error in handleModelStorge:', e);
+        }finally {
             setIsLoaded(true);
         }
     };

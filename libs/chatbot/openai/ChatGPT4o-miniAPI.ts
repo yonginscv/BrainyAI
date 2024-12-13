@@ -1,6 +1,6 @@
 import {OpenaiBot} from "~libs/chatbot/openai/index";
 import {OpenAIAuth} from "~libs/open-ai/open-ai-auth";
-import {BotSession} from "~libs/chatbot/BotSessionBase";
+import {BotSession, SimpleBotMessage} from "~libs/chatbot/BotSessionBase";
 import type {BotCompletionParams, BotConstructorParams} from "~libs/chatbot/IBot";
 import {ConversationResponse, ResponseMessageType} from "~libs/open-ai/open-ai-interface";
 import {ChatError, ErrorCode} from "~utils/errors";
@@ -72,22 +72,25 @@ export default class ChatGPT4oMiniAPI extends OpenaiBot {
         this.authInstance = ChatGPTAPIAuthSingleton.getInstance();
     }
 
-    async completion({prompt, rid, cb}: BotCompletionParams): Promise<void> {
+    async completion({prompt, rid, cb, fileRef, file}: BotCompletionParams): Promise<void> {
         try {
             // API 키 가져오기
             const storage = new Storage();
             const apiKey = await storage.get('openai-api-key');
             
             if (!apiKey) {
-                throw new Error('API 키가 설정되지 않았습니다.');
+                throw new ChatError(ErrorCode.MODEL_INTERNAL_ERROR, 'API 키가 설정되지 않았습니다.');
             }
+
+            let messageText = '';
+            let messageId = '';
 
             console.log('completion api called with prompt:', prompt);
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`  // 저장된 API 키 사용
+                    'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
                     model: this.model,
@@ -100,7 +103,8 @@ export default class ChatGPT4oMiniAPI extends OpenaiBot {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                Logger.error('Http error: ', response);
+                throw new ChatError(ErrorCode.MODEL_INTERNAL_ERROR, `HTTP error! status: ${response.status}`);
             }
 
             const reader = response.body?.getReader();
@@ -123,23 +127,34 @@ export default class ChatGPT4oMiniAPI extends OpenaiBot {
                         try {
                             const json = JSON.parse(data);
                             const content = json.choices[0]?.delta?.content || '';
+                            messageText += content;
+                            messageId = json.id;
 
+                            Logger.log("Response:", json);
                             cb(rid, new ConversationResponse({
                                 conversation_id: this.botSession.session.botConversationId,
                                 message_type: ResponseMessageType.GENERATING,
-                                message_text: content,
-                                message_id: json.id
+                                message_text: messageText,
+                                message_id: messageId,
+                                parent_message_id: this.botSession.session.getParentMessageId()
                             }));
                         } catch (e) {
                             Logger.error('Failed to parse JSON:', e);
+                            throw new ChatError(ErrorCode.MODEL_INTERNAL_ERROR, 'JSON 파싱 오류');
                         }
                     }
                 }
             }
 
+            // 메시지 저장 및 세션 업데이트
+            this.botSession.session.addMessage(new SimpleBotMessage(messageText, messageId));
+
             cb(rid, new ConversationResponse({
                 conversation_id: this.botSession.session.botConversationId,
-                message_type: ResponseMessageType.DONE
+                message_type: ResponseMessageType.DONE,
+                message_text: messageText,
+                message_id: messageId,
+                parent_message_id: this.botSession.session.getParentMessageId()
             }));
 
         } catch (error) {
@@ -147,7 +162,7 @@ export default class ChatGPT4oMiniAPI extends OpenaiBot {
             cb(rid, new ConversationResponse({
                 conversation_id: this.botSession.session.botConversationId,
                 message_type: ResponseMessageType.ERROR,
-                error: new ChatError(ErrorCode.MODEL_INTERNAL_ERROR)
+                error: error instanceof ChatError ? error : new ChatError(ErrorCode.MODEL_INTERNAL_ERROR, error.message)
             }));
         }
     }

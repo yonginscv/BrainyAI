@@ -34,7 +34,7 @@ export const config: PlasmoCSConfig = {
     matches: ["<all_urls>"],
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    exclude_globs: ["*opis=1*", "chrome://*", "*--oppcw*", "*--opaw*"],
+    exclude_globs: ["*opis=1*", "chrome://*"],
     all_frames: false,
 };
 
@@ -280,6 +280,7 @@ export default function Base() {
     useEffect(() => {
         Logger.log('chrome.runtime.onMessage.addListener============');
         chrome.runtime.onMessage.addListener(handleMessage);
+        
         if (!openInPlugin(location.href)) {
             document.body.addEventListener('mouseup', () => {
                 Logger.log(`mouseup ===============${showAskSearch}`);
