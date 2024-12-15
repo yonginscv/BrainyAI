@@ -5,9 +5,9 @@
   "description": "",
   "scripts": {
     "dev": "set NODE_OPTIONS=--no-deprecation && plasmo dev --verbose",
-    "build": "plasmo build",
+    "build": "plasmo build --target=edge-mv3",
     "build:staging": "plasmo build --tag=staging",
-    "package": "plasmo package",
+    "package": "plasmo package --target=edge-mv3",
     "lint": "npx eslint . --fix"
   },
   "dependencies": {
