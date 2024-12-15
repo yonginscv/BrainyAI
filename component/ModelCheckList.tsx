@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {CloseCircleOutlined} from "@ant-design/icons";
-import {Checkbox, Tooltip} from "antd";
+import {Checkbox, Tooltip, Radio} from "antd";
 import {useContext, useEffect, useRef, useState} from "react";
 import {type CMsItem, type M, ModelManagementContext} from "~provider/ModelManagementProvider";
 import CloseCircleBlue from "data-base64:~assets/CloseCircle_blue.svg";
@@ -128,22 +128,13 @@ const ModelItem = ({model, isLogin, setIsOpenProviderToolTip, getLoginStatus} : 
     };
 
     const modelChange: (e, model) => void = async (e, model) => {
-        if (!e.target.checked && currentBots.length > 1) {
-            setCurrentBots(currentBots.filter(item => item.botName !== model.botName));
-        }
-
         if (e.target.checked) {
-            if (currentBots.length >= 3) {
-                setCurrentBots([...currentBots.slice(1), model]);
-            } else {
-                setCurrentBots([...currentBots, model]);
-            }
+            setCurrentBots([model]);
 
             if (model.requireLogin && !isLogin) {
                 setIsOpenProviderToolTip(true);
             }
         }
-
         saveCurrentBotsKeyLocal();
     };
 
@@ -167,7 +158,11 @@ const ModelItem = ({model, isLogin, setIsOpenProviderToolTip, getLoginStatus} : 
     return <div className={`relative w-full h-9 px-4 box-border  hover:bg-[#F2F5FF] flex justify-between items-center`}>
         <div className='flex items-center justify-start'>
             {/*{currentBots.includes(model) && <div className="w-1 h-full bg-[#0A4DFE] absolute left-0 top-0"/>}*/}
-            <Checkbox checked={currentBots.includes(model)} className={'w-4 h-4 mr-4'} onChange={(event) => modelChange(event, model)}/>
+            <Radio 
+                checked={currentBots.includes(model)} 
+                className={'w-4 h-4 mr-4'} 
+                onChange={(event) => modelChange(event, model)}
+            />
             <Tooltip overlayStyle={{maxWidth: '300px'}} title={modelTip(model)} placement={"topLeft"}>
                 <div className='flex items-center'>
                     <div className='w-4 h-4 mr-2 relative'>
@@ -234,26 +229,14 @@ export const ModelCheckList = ({onClose}: Props) => {
                 <CloseCircleOutlined onClick={onClose} style={{fontSize: '24px', color: '#5E5E5E'}}/>
             </div>
             <div className='border-t border-[#F3F4F9] p-4 sticky top-[64px] z-10 bg-white'>
-                <div className='pr-2 pt-2 bg-[#F3F4F9] rounded-2xl flex justify-start flex-wrap'>
-                    {
-                        currentBots.map((item, index) => {
-                            return <div key={index}
-                                className="relative group hover:shadow-[0_0_6px_0px_rgba(0,0,0,0.2)] rounded-[12.5px] bg-white px-2 py-[4.5px] flex items-center justify-start mb-2 ml-2 flex-1 max-w-[48%]">
-                                {/*<div*/}
-                                {/*    className="bg-[#C2C2C233] bg-opacity-20 text-[#C2C2C2] text-[10px] w-4 h-4 rounded-full mr-2 flex justify-center items-center">{index + 1}</div>*/}
-                                <img className='mr-2 w-4 h-4' src={item.logoSrc} alt=''/>
-                                <div className="text-[12px] text-[#333333] mr-3 truncate">{item.botName}</div>
-                                {
-                                    currentBots.length > 1 &&
-                                    <div className='h-4 absolute right-[-4px] top-[-8px]'>
-                                        <img onClick={() => {
-                                            modelUnCheck(item);
-                                        }} className='w-4 h-4 group-hover:block hidden' src={CloseCircleBlue} alt=""/>
-                                    </div>
-                                }
-                            </div>;
-                        })
-                    }
+                <div className='pr-2 pt-2 bg-[#F3F4F9] rounded-2xl flex justify-start'>
+                    {currentBots.map((item, index) => (
+                        <div key={index}
+                            className="relative group rounded-[12.5px] bg-white px-2 py-[4.5px] flex items-center justify-start mb-2 ml-2">
+                            <img className='mr-2 w-4 h-4' src={item.logoSrc} alt=''/>
+                            <div className="text-[12px] text-[#333333] truncate">{item.botName}</div>
+                        </div>
+                    ))}
                 </div>
             </div>
             {

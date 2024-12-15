@@ -31,7 +31,7 @@ export default function AiEnginePage() {
     const [cards, setCards] = useStorage('promptData', PromptDatas);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false);
-    const [language, setLanguage] = useState('English');
+    const [language, setLanguage] = useState('한국어');
     const [, drop] = useDrop(() => ({accept: ItemTypes.CARD}));
     const {messageApi} = useContext(OptionsContext);
     const showType = useRef(0);

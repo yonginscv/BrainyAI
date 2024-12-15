@@ -557,11 +557,11 @@ export const AIMessage = memo(({message, i}: {
             setPopoverOpen(true);
         });
 
-        window.addEventListener('mousedown', (e: MouseEvent) => {
-            if (e.target !== switchRef.current && !popoverRef.current!.contains(e.target as Node) ) {
-                setPopoverOpen(false);
-            }
-        });
+        // window.addEventListener('mousedown', (e: MouseEvent) => {
+        //     if (e.target !== switchRef.current && !popoverRef && !popoverRef.current!.contains(e.target as Node) ) {
+        //         setPopoverOpen(false);
+        //     }
+        // });
     }, []);
 
     const handleTabChange = (index: number) => {
@@ -942,10 +942,6 @@ function ConversationContent() {
         }
     }
 
-    const getModelLoginTag = function (model) {
-        return model.requireLogin ? "Login Required" : "No Login Required";
-    };
-
     const modelSelectorModal = (
         <Modal destroyOnClose className='modelModal' title={null} closeIcon={false} width={600}
             style={{top: 60, bottom: 0, }} footer={null}
@@ -966,12 +962,12 @@ function ConversationContent() {
                                 <img className={'mr-2 w-[16px] h-[16px]'}
                                     src={item.logoSrc} alt=''/>
                             </Tooltip>
-
-                            {currentBots.length === 1 && `${item.botName}(${getModelLoginTag(item)})`}
+                            {currentBots.length === 1 && `${item.botName}`}
                         </div>
                     );
                 })
             }
+            
             <CaretDownOutlined className={'ml-[4px]'}/>
         </div>;
     };
@@ -1391,6 +1387,23 @@ function ConversationContent() {
             </div>
         </div>
     );
+
+    useEffect(() => {
+        const handleExtensionError = () => {
+            // 컨텍스트 무효화 감지 시 페이지 리로드
+            window.location.reload();
+        };
+
+        window.addEventListener('error', (e) => {
+            if (e.message.includes('Extension context invalidated')) {
+                handleExtensionError();
+            }
+        });
+
+        return () => {
+            window.removeEventListener('error', handleExtensionError);
+        };
+    }, []);
 
     return <Fragment>
         <MessageList/>

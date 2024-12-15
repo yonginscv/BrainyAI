@@ -1,20 +1,19 @@
 import React, {createContext, useEffect, useRef, useState} from "react";
 import {getLatestState} from "~utils";
-import {CopilotBot} from "~libs/chatbot/copilot";
 import ChatGPT35Turbo from "~libs/chatbot/openai/ChatGPT35Turbo";
 import {Storage} from "@plasmohq/storage";
 import  ChatGPT4Turbo from "~libs/chatbot/openai/ChatGPT4Turbo";
 import ChatGPT4oMiniAPI from "~libs/chatbot/openai/ChatGPT4o-miniAPI";
+import JiheyAPI from "~libs/chatbot/openai/JiheyAPI";
+import JihyeAPIStream from "~libs/chatbot/openai/JihyeAPIStream";
 import {Logger} from "~utils/logger";
 import ChatGPT4O from "~libs/chatbot/openai/ChatGPT4o";
 import ArkoseGlobalSingleton from "~libs/chatbot/openai/Arkose";
 
 export type M = (
-    typeof ChatGPT35Turbo
-    | typeof CopilotBot
-    | typeof ChatGPT4Turbo
-    | typeof ChatGPT4O
+    typeof ChatGPT4oMiniAPI
     | typeof ChatGPT4oMiniAPI
+    | typeof JihyeAPIStream
     )
 
 export type Ms = M[]
@@ -36,21 +35,21 @@ interface IModelManagementProvider {
 export const ModelManagementContext = createContext({} as IModelManagementProvider);
 
 export default function ModelManagementProvider({children}) {
-    const defaultModels: Ms = [ChatGPT35Turbo];
+    const defaultModels: Ms = [JihyeAPIStream];
     const [currentBots, setCurrentBots] = useState<IModelManagementProvider['currentBots']>(defaultModels);
-    const allModels = useRef<Ms>([ChatGPT35Turbo, ChatGPT4O, ChatGPT4Turbo, CopilotBot, ChatGPT4oMiniAPI]);
+    const allModels = useRef<Ms>([JihyeAPIStream, ChatGPT4oMiniAPI]);
     const storage = new Storage();
     const [isLoaded, setIsLoaded] = useState(false);
     const categoryModels = useRef<CMs>([
         {
-            label: "OpenAI",
-            models: [ChatGPT35Turbo, ChatGPT4Turbo, ChatGPT4O, ChatGPT4oMiniAPI]
+            label: "ixi-Jihye",
+            models: [JihyeAPIStream]
         },
         {
-            label: "Microsoft",
-            models: [CopilotBot]
-        }]
-    );
+            label: "OpenAI",
+            models: [ChatGPT4oMiniAPI]
+        }
+    ]);
 
     const handleModelStorge = async () => {
         try {

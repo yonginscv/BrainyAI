@@ -63,7 +63,9 @@ export default function () {
         eventBus.emit('newChat');
     };
 
-
+    const openOptions = () => {
+        window.open(`chrome-extension://${chrome.runtime.id}/options.html`);
+    };
 
     return <div className={"h-[52px] box-border flex-0 flex-shrink-0 flex-grow-0 w-full flex justify-between items-center px-[16px]"}>
 
@@ -73,6 +75,14 @@ export default function () {
         <div className='flex justify-end items-center'>
             <Tooltip title='New Chat'>
                 {titleText === HTitle.AIChatText && <img  className='w-[22px] mr-4 cursor-pointer' src={NewChatIcon} onClick={newChatClick} alt=""/>}
+            </Tooltip>
+            <Tooltip title='Settings'>
+                <img 
+                    className='w-[22px] cursor-pointer mr-4' 
+                    src={IconSetting} 
+                    onClick={openOptions} 
+                    alt="settings"
+                />
             </Tooltip>
         </div>
     </div>;
